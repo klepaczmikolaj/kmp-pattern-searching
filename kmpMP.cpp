@@ -15,12 +15,6 @@ void computePrefixSuffixMP(char *text, int *P, int textLength) {
 		t++;
 		P[j] = t;
 	}
-/*	
-	//display prefix-suffix
-	for (int i = 1; i < textLength + 1; i++)
-		std::cout << P[i];
-	std::cout << std::endl;
-*/
 }
 
 void computeStrongPrefixSuffixMP(char *text, int *Pp, int textLength) {
@@ -37,53 +31,53 @@ void computeStrongPrefixSuffixMP(char *text, int *Pp, int textLength) {
 		else
 			Pp[j] = Pp[t];
 	}
-	/*
-	//display prefix-suffix
-	for (int i = 1; i < textLength + 1; i++)
-		std::cout << Pp[i];
-	std::cout << std::endl;
-	*/
 }
 
-int kmpAlgorithmMP(char *text, char *pattern, bool isPSStrong) {
+int kmpAlgorithmMP(char *text, char *pattern, bool isPSStrong, int *patPositions) {
 
 	int textLength = strlen(text); // y, n
 	int patLength = strlen(pattern); //x, m
 	int pLength = textLength + 1;
 	int *P = new int[pLength];
 	int occurrences = 0;
-	int i = 0;
-	int j = 0;
 
 	
-	#pragma omp parallel
+	#pragma omp parallel num_threads (4)
 	{
-	
+		int i = 0;
+		int j = 0;
 		if (isPSStrong)
 			computeStrongPrefixSuffixMP(text, P, textLength);
 		else
 			computePrefixSuffixMP(text, P, textLength);
 
-		while (i < textLength - patLength) {
+		#pragma omp for reduction (+: occurrences)
+		for (i = 0; i < textLength - patLength; i = i + j - P[j]){
+			if (i > 0)
+				j = std::max(0, P[j]);
 			while (j < patLength && pattern[j] == text[i + j])
 				j++;
 			if (j == patLength) {
 				// std::cout << "Found pattern at index: " << i << std::endl;
-				occurrences++;
+				#pragma omp critical
+				{
+					patPositions[occurrences] = i;
+					occurrences++;
+
+				}
 			}
-			i = i + j - P[j];
-			j = std::max(0, P[j]);
 		}
+
 	}
 
 	delete[] P;
 	return occurrences;
 }
 
-int morrisPrattMP(char *text, char *pattern) {
-	return kmpAlgorithmMP(text, pattern, false);
+int morrisPrattMP(char *text, char *pattern, int *patPositions) {
+	return kmpAlgorithmMP(text, pattern, false, patPositions);
 }
 
-int knuthMorrisPrattMP(char *text, char *pattern) {
-	return kmpAlgorithmMP(text, pattern, true);
+int knuthMorrisPrattMP(char *text, char *pattern, int *patPositions) {
+	return kmpAlgorithmMP(text, pattern, true, patPositions);
 }

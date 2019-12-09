@@ -12,6 +12,7 @@
 
 test_data/
 *.exe
+*.out
 
 # Build results
 [Dd]ebug/
