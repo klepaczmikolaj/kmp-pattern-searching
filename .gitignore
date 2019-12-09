@@ -11,6 +11,7 @@
 *.userprefs
 
 test_data/
+*.exe
 
 # Build results
 [Dd]ebug/

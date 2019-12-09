@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <iostream>
 #include <algorithm>
+#include <cstring>
 #include "kmp.h"
 
 void computePrefixSuffix(char *text, int *P, int textLength) {
