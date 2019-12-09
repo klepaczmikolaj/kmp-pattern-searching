@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <iostream>
 #include <algorithm>
+#include <cstring>
 #include "kmp.h"
 
 void computePrefixSuffix(char *text, int *P, int textLength) {
@@ -13,10 +14,6 @@ void computePrefixSuffix(char *text, int *P, int textLength) {
 		t++;
 		P[j] = t;
 	}
-	//display prefix-suffix
-	for (int i = 1; i < textLength + 1; i++)
-		std::cout << P[i];
-	std::cout << std::endl;
 }
 
 void computeStrongPrefixSuffix(char *text, int *Pp, int textLength) {
@@ -32,35 +29,34 @@ void computeStrongPrefixSuffix(char *text, int *Pp, int textLength) {
 		else
 			Pp[j] = Pp[t];
 	}
-	//display prefix-suffix
-	for (int i = 1; i < textLength + 1; i++)
-		std::cout << Pp[i];
-	std::cout << std::endl;
 }
 
-int kmpAlgorithm(char *text, char *pattern, bool isPSStrong) {
+int kmpAlgorithm(char *text, char *pattern, bool isPSStrong, int *patPositions) {
+
 	int textLength = strlen(text); // y, n
 	int patLength = strlen(pattern); //x, m
 	int pLength = textLength + 1;
 	int *P = new int[pLength];
 	int occurrences = 0;
+	
 	int i = 0;
 	int j = 0;
-
 	if (isPSStrong)
 		computeStrongPrefixSuffix(text, P, textLength);
 	else
 		computePrefixSuffix(text, P, textLength);
 
-	while (i < textLength - patLength) {
+	for (i = 0; i < textLength - patLength; i = i + j - P[j]){
+		if (i > 0)
+			j = std::max(0, P[j]);
 		while (j < patLength && pattern[j] == text[i + j])
 			j++;
 		if (j == patLength) {
-			std::cout << "Found pattern at index: " << i << std::endl;
+			// std::cout << "Found pattern at index: " << i << std::endl;
+			patPositions[occurrences] = i;
 			occurrences++;
+
 		}
-		i = i + j - P[j];
-		j = std::max(0, P[j]);
 	}
 
 
@@ -68,10 +64,10 @@ int kmpAlgorithm(char *text, char *pattern, bool isPSStrong) {
 	return occurrences;
 }
 
-int morrisPratt(char *text, char *pattern) {
-	return kmpAlgorithm(text, pattern, false);
+int morrisPratt(char *text, char *pattern, int *patPositions) {
+	return kmpAlgorithm(text, pattern, false, patPositions);
 }
 
-int knuthMorrisPratt(char *text, char *pattern) {
-	return kmpAlgorithm(text, pattern, true);
+int knuthMorrisPratt(char *text, char *pattern, int *patPositions) {
+	return kmpAlgorithm(text, pattern, true, patPositions);
 }
