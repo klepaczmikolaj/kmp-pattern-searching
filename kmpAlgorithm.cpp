@@ -72,17 +72,12 @@ int main(int argc, char **argv){
 	if(isSequential){
 		//sequential
 		start = getWallTime();
+		std::cout << "Sequential MP algorithm: " << std::endl;
 		result1 = morrisPratt(text, pattern, patPositions);
-		end = getWallTime();
-		timeElapsed = (double) (end - start);
-		std::cout << "Time elapsed, sequential MP algorithm: " << timeElapsed << std::endl;
 		std::cout << "Number of \'" << pattern << "\' occurrences: " << result1 << std::endl << std::endl;
 
-		start = getWallTime();
+		std::cout << "Sequential KMP algorithm: " << std::endl;
 		result2 = knuthMorrisPratt(text, pattern, patPositions);
-		end = getWallTime();
-		timeElapsed = (double)(end - start);
-		std::cout << "Time elapsed, sequential KMP algorithm: " << timeElapsed << std::endl;
 		std::cout << "Number of \'" << pattern << "\' occurrences: " << result2 << std::endl << std::endl;
 	}
 	else{
