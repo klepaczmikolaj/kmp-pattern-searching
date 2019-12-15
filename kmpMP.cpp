@@ -33,7 +33,7 @@ void computeStrongPrefixSuffixMP(char *text, int *Pp, int textLength) {
 	}
 }
 
-int kmpAlgorithmMP(char *text, char *pattern, bool isPSStrong, int *patPositions) {
+int kmpAlgorithmMP(char *text, char *pattern, bool isPSStrong, int *patPositions, int thread_count) {
 
 	int textLength = strlen(text); // y, n
 	int patLength = strlen(pattern); //x, m
@@ -42,7 +42,7 @@ int kmpAlgorithmMP(char *text, char *pattern, bool isPSStrong, int *patPositions
 	int occurrences = 0;
 
 	
-	#pragma omp parallel num_threads (4)
+	#pragma omp parallel num_threads (thread_count)
 	{
 		int i = 0;
 		int j = 0;
@@ -74,10 +74,10 @@ int kmpAlgorithmMP(char *text, char *pattern, bool isPSStrong, int *patPositions
 	return occurrences;
 }
 
-int morrisPrattMP(char *text, char *pattern, int *patPositions) {
-	return kmpAlgorithmMP(text, pattern, false, patPositions);
+int morrisPrattMP(char *text, char *pattern, int *patPositions, int thread_count) {
+	return kmpAlgorithmMP(text, pattern, false, patPositions, thread_count);
 }
 
-int knuthMorrisPrattMP(char *text, char *pattern, int *patPositions) {
-	return kmpAlgorithmMP(text, pattern, true, patPositions);
+int knuthMorrisPrattMP(char *text, char *pattern, int *patPositions, int thread_count) {
+	return kmpAlgorithmMP(text, pattern, true, patPositions, thread_count);
 }
